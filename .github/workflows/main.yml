@@ -1,3 +1,4 @@
+name: Generate tag version
 on:
   workflow_dispatch:
     inputs:

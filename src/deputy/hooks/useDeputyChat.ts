@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { UseChatOptions, useChat } from './useChat'
 import { useDeputyContext } from '../DeputyProvider'
 import { AiFunction, Message, SystemMessageFunction } from '../assistant/types'
+import { nanoid } from 'nanoid'
 
 export interface UseDeputyChatOptions extends UseChatOptions {
   makeSystemMessage?: SystemMessageFunction
@@ -11,7 +12,7 @@ export interface UseDeputyChatOptions extends UseChatOptions {
 
 export interface UseDeputyChatReturn {
   visibleMessages: Message[]
-  append: (message: Message) => Promise<void>
+  append: (message: string) => Promise<void>
   reload: () => Promise<void>
   stop: () => void
   isLoading: boolean
@@ -44,7 +45,13 @@ export function useDeputyChat({
     return getChatCompletionFunctionDescriptions()
   }, [getChatCompletionFunctionDescriptions])
 
-  const { messages, append, reload, stop, isLoading } = useChat({
+  const {
+    messages,
+    append: primitiveAppend,
+    reload,
+    stop,
+    isLoading,
+  } = useChat({
     ...options,
     deputyConfig: deputyApiConfig,
     id: options.id,
@@ -63,7 +70,12 @@ export function useDeputyChat({
 
   return {
     visibleMessages,
-    append,
+    append: (message: string) =>
+      primitiveAppend({
+        id: nanoid(),
+        content: message,
+        role: 'user',
+      }),
     reload,
     stop,
     isLoading,

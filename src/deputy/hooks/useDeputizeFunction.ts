@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid'
 import { FunctionSchema } from '../assistant/types'
 import { useDeputyContext } from '../DeputyProvider'
 
-export function useDeputizeFunction(deputyFunction: FunctionSchema) {
+export function useDeputizeFunction(deputyFunction: FunctionSchema, dependencies: unknown[] = []) {
   const { setEntryPoint, removeEntryPoint } = useDeputyContext()
 
   const idRef = React.useRef(nanoid()) // generate a unique id
@@ -16,7 +16,7 @@ export function useDeputizeFunction(deputyFunction: FunctionSchema) {
       parameters: deputyFunction.parameters,
       implementation: deputyFunction.implementation,
     }),
-    [],
+    dependencies,
   )
 
   React.useEffect(() => {

@@ -26,10 +26,10 @@ export class Plugin<Options extends { endpoint: string }> {
   }
 }
 
-const OpenAIChat = Plugin.create({
-  name: 'openai-chat',
-})
+// const OpenAIChat = Plugin.create({
+//   name: 'openai-chat',
+// })
 
-OpenAIChat.configure({
-  endpoint: 'https://api.openai.com/v1/engines/davinci-codex/completions',
-})
+// OpenAIChat.configure({
+//   endpoint: 'https://api.openai.com/v1/engines/davinci-codex/completions',
+// })

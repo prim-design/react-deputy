@@ -1,11 +1,4 @@
-import { ZodSchema } from 'zod'
-
-export interface FunctionSchema<T = unknown> {
-  name: string
-  description: string
-  parameters: ZodSchema
-  implementation: (props: unknown) => Promise<T> | T
-}
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 export type Role = 'system' | 'user' | 'assistant' | 'function'
 
@@ -104,4 +97,32 @@ export interface DocumentPointer {
   sourceApplication: string
   iconImageUri: string
   getContents: () => string
+}
+
+export interface AnnotatedFunctionSimpleArgument {
+  name: string
+  type: 'string' | 'number' | 'boolean' | 'object' // Add or change types according to your needs.
+  description: string
+  required: boolean
+}
+
+export interface AnnotatedFunctionArrayArgument {
+  name: string
+  type: 'array'
+  items: {
+    type: string
+  }
+  description: string
+  required: boolean
+}
+
+export type AnnotatedFunctionArgument =
+  | AnnotatedFunctionSimpleArgument
+  | AnnotatedFunctionArrayArgument
+
+export interface AnnotatedFunction<Inputs extends any[]> {
+  name: string
+  description: string
+  argumentAnnotations: AnnotatedFunctionArgument[]
+  implementation: (...args: Inputs) => Promise<void>
 }

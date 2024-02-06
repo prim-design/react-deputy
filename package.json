@@ -65,7 +65,6 @@
   "peerDependencies": {
     "react": ">=17.0.0",
     "react-dom": ">=17.0.0"
-  
   },
   "repository": {
     "type": "git",
@@ -79,8 +78,6 @@
   "homepage": "https://github.com/noah-wardlow/react-deputy#readme",
   "license": "MIT",
   "dependencies": {
-    "zod": "^3.22.4",
-    "nanoid": "^5.0.5",
-    "zod-to-json-schema": "^3.22.4"
+    "nanoid": "^5.0.5"
   }
 }

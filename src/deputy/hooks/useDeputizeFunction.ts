@@ -1,26 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { nanoid } from 'nanoid'
-// import zodToJsonSchema from 'zod-to-json-schema'
-import { FunctionSchema } from '../assistant/types'
 import { useDeputyContext } from '../DeputyProvider'
+import { AnnotatedFunction } from '../assistant/types'
 
-export function useDeputizeFunction(deputyFunction: FunctionSchema, dependencies: unknown[] = []) {
+export function useDeputizeFunction<ActionInput extends any[]>(
+  annotatedFunction: AnnotatedFunction<ActionInput>,
+  dependencies: unknown[],
+) {
   const { setEntryPoint, removeEntryPoint } = useDeputyContext()
 
   const idRef = React.useRef(nanoid()) // generate a unique id
 
   const memoizedAnnotatedFunction = React.useMemo(
     () => ({
-      name: deputyFunction.name,
-      description: deputyFunction.description,
-      parameters: deputyFunction.parameters,
-      implementation: deputyFunction.implementation,
+      name: annotatedFunction.name,
+      description: annotatedFunction.description,
+      argumentAnnotations: annotatedFunction.argumentAnnotations,
+      implementation: annotatedFunction.implementation,
     }),
     dependencies,
   )
 
   React.useEffect(() => {
-    setEntryPoint(idRef.current, memoizedAnnotatedFunction)
+    setEntryPoint(idRef.current, memoizedAnnotatedFunction as AnnotatedFunction<any[]>)
 
     return () => {
       removeEntryPoint(idRef.current)

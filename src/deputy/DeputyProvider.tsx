@@ -1,20 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-// import { Plugin } from './plugins/plugin'
-import { AiFunction, DocumentPointer, FunctionCallHandler, FunctionSchema } from './assistant/types'
+import {
+  AiFunction,
+  AnnotatedFunction,
+  DocumentPointer,
+  FunctionCallHandler,
+} from './assistant/types'
 import useTree, { TreeNodeId } from './hooks/useReadTree'
 import useFlatCategoryStore from './hooks/useFlatCategoryStore'
 import { annotatedFunctionToChatCompletionFunction } from './utils'
 import { DeputyApiConfig, StandardDeputyApiConfig } from './utils/standard-api-config'
 
 interface DeputyContextType {
-  entryPoints: Record<string, FunctionSchema>
-  setEntryPoint: (id: string, deputyFunction: FunctionSchema) => void
+  entryPoints: Record<string, AnnotatedFunction<any[]>>
+  setEntryPoint: (id: string, entryPoint: AnnotatedFunction<any[]>) => void
   removeEntryPoint: (id: string) => void
   getChatCompletionFunctionDescriptions: (
-    customEntryPoints?: Record<string, FunctionSchema>,
+    customEntryPoints?: Record<string, AnnotatedFunction<any[]>>,
   ) => AiFunction[]
   getFunctionCallHandler: (
-    customEntryPoints?: Record<string, FunctionSchema>,
+    customEntryPoints?: Record<string, AnnotatedFunction<any[]>>,
   ) => FunctionCallHandler
   addContext: (context: string, parentId?: string, categories?: string[]) => string
   removeContext: (id: string) => void
@@ -73,13 +78,13 @@ export function DeputyProvider({ children, ...props }: DeputyProviderProps) {
 
   const { addElement, removeElement, printTree } = useTree()
 
-  const [entryPoints, setEntryPoints] = React.useState<Record<string, FunctionSchema>>({})
+  const [entryPoints, setEntryPoints] = React.useState<Record<string, AnnotatedFunction<any[]>>>({})
 
-  const setEntryPoint = React.useCallback((id: string, deputyFunction: FunctionSchema) => {
+  const setEntryPoint = React.useCallback((id: string, entryPoint: AnnotatedFunction<any[]>) => {
     setEntryPoints((prev) => {
       return {
         ...prev,
-        [id]: deputyFunction,
+        [id]: entryPoint,
       }
     })
   }, [])
@@ -118,14 +123,14 @@ export function DeputyProvider({ children, ...props }: DeputyProviderProps) {
   )
 
   const getChatCompletionFunctionDescriptions = React.useCallback(
-    (customEntryPoints?: Record<string, FunctionSchema>) => {
+    (customEntryPoints?: Record<string, AnnotatedFunction<any[]>>) => {
       return entryPointsToChatCompletionFunctions(Object.values(customEntryPoints || entryPoints))
     },
     [entryPoints],
   )
 
   const getFunctionCallHandler = React.useCallback(
-    (customEntryPoints?: Record<string, FunctionSchema>) => {
+    (customEntryPoints?: Record<string, AnnotatedFunction<any[]>>) => {
       return entryPointsToFunctionCallHandler(Object.values(customEntryPoints || entryPoints))
     },
     [entryPoints],
@@ -190,26 +195,30 @@ export function useDeputyContext() {
   }
 }
 
-function entryPointsToFunctionCallHandler(entryPoints: FunctionSchema[]): FunctionCallHandler {
+function entryPointsToFunctionCallHandler(
+  entryPoints: AnnotatedFunction<any[]>[],
+): FunctionCallHandler {
   return async (chatMessages, functionCall) => {
-    const entrypointsByFunctionName: Record<string, FunctionSchema> = {}
+    const entrypointsByFunctionName: Record<string, AnnotatedFunction<any[]>> = {}
     for (const entryPoint of entryPoints) {
       entrypointsByFunctionName[entryPoint.name] = entryPoint
     }
 
     const entryPointFunction = entrypointsByFunctionName[functionCall.name || '']
     if (entryPointFunction) {
-      let functionCallArguments: Record<string, unknown>[] = []
+      let functionCallArguments: Record<string, any>[] = []
       if (functionCall.arguments) {
         functionCallArguments = JSON.parse(functionCall.arguments)
       }
 
-      const paramsInCorrectOrder: unknown[] = []
-      for (const arg of Object.keys(entryPointFunction.parameters)) {
-        paramsInCorrectOrder.push(functionCallArguments[arg as keyof typeof functionCallArguments])
+      const paramsInCorrectOrder: any[] = []
+      for (const arg of entryPointFunction.argumentAnnotations) {
+        paramsInCorrectOrder.push(
+          functionCallArguments[arg.name as keyof typeof functionCallArguments],
+        )
       }
 
-      await entryPointFunction.implementation({ ...paramsInCorrectOrder })
+      await entryPointFunction.implementation(...paramsInCorrectOrder)
 
       // commented out becasue for now we don't want to return anything
       // const result = await entryPointFunction.implementation(
@@ -232,6 +241,8 @@ function entryPointsToFunctionCallHandler(entryPoints: FunctionSchema[]): Functi
   }
 }
 
-function entryPointsToChatCompletionFunctions(entryPoints: FunctionSchema[]): AiFunction[] {
+function entryPointsToChatCompletionFunctions(
+  entryPoints: AnnotatedFunction<any[]>[],
+): AiFunction[] {
   return entryPoints.map(annotatedFunctionToChatCompletionFunction)
 }

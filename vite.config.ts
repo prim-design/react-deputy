@@ -11,7 +11,7 @@ import * as packageJson from './package.json'
 export default defineConfig((configEnv) => ({
   plugins: [
     dts({
-      include: ['src/deputy/'],
+      include: ['src'],
     }),
     react(),
     tsConfigPaths(),
@@ -22,7 +22,7 @@ export default defineConfig((configEnv) => ({
   ],
   build: {
     lib: {
-      entry: resolve('src', 'deputy/index.ts'),
+      entry: resolve('src', 'index.ts'),
       name: 'ReactDeputy',
       formats: ['es', 'umd'],
       fileName: (format) => `react-deputy.${format}.js`,

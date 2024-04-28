@@ -20,11 +20,11 @@
      "declarationMap": true,
     "baseUrl": ".",
      "paths": {
-      "react-deputy": [ "src/deputy/index.ts" ]
+      "react-deputy": [ "src/index.ts" ]
     },
     "typeRoots": [
       "node_modules/@types",
-      "src/deputy/index.d.ts"
+      "src/index.d.ts"
     ]
   },
   "include": ["src"],

@@ -30,8 +30,7 @@
     ".": {
       "import": "./dist/react-deputy.es.js",
       "require": "./dist/react-deputy.umd.js"
-    },
-    "./dist/style.css": "./dist/style.css"
+    }
   },
   "main": "./dist/react-deputy.umd.js",
   "module": "./dist/react-deputy.es.js",

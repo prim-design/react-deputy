@@ -84,8 +84,5 @@
     "url": "https://github.com/noah-wardlow/react-deputy/issues"
   },
   "homepage": "https://github.com/noah-wardlow/react-deputy#readme",
-  "license": "MIT",
-  "dependencies": {
-    "nanoid": "^5.0.5"
-  }
+  "license": "MIT"
 }

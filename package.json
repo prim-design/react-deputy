@@ -1,0 +1,89 @@
+{
+  "name": "react-deputy",
+  "private": false,
+  "version": "0.0.2",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+    "lint:fix": "eslint --fix 'src/**/*.{jsx,ts,tsx}'",
+    "format": "prettier --write src//**/*.{ts,tsx} --config ./.prettierrc",
+    "prepare": "husky install"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "yarn  eslint",
+      "yarn  format"
+    ]
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/react-deputy.es.js",
+      "require": "./dist/react-deputy.umd.js"
+    }
+  },
+  "main": "./dist/react-deputy.umd.js",
+  "module": "./dist/react-deputy.es.js",
+  "types": "./dist/index.d.ts",
+  "devDependencies": {
+    "@types/node": "^20.11.16",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.30.1",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1",
+    "vite-plugin-dts": "^1.4.1",
+    "vite-plugin-linter": "^1.2.0",
+    "vite-tsconfig-paths": "^3.5.0",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@types/uuid": "^9.0.8",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "openai": "^4.38.5",
+    "publint": "^0.2.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.2.2",
+    "uuid": "^9.0.1",
+    "vite": "^5.2.0",
+    "zod": "^3.23.4",
+    "zod-to-json-schema": "^3.23.0"
+  },
+  "peerDependencies": {
+    "openai": "^4.38.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zod": "^3.23.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noah-wardlow/react-deputy"
+  },
+  "keywords": [],
+  "author": "Noah Wardlow",
+  "bugs": {
+    "url": "https://github.com/noah-wardlow/react-deputy/issues"
+  },
+  "homepage": "https://github.com/noah-wardlow/react-deputy#readme",
+  "license": "MIT",
+  "dependencies": {}
+}

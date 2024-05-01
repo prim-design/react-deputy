@@ -1,7 +1,7 @@
 {
   "name": "react-deputy",
   "private": false,
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -76,14 +76,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/noah-wardlow/react-deputy"
+    "url": "https://github.com/prim-design/react-deputy"
   },
   "keywords": [],
   "author": "Noah Wardlow",
   "bugs": {
-    "url": "https://github.com/noah-wardlow/react-deputy/issues"
+    "url": "https://github.com/prim-design/react-deputy/issues"
   },
-  "homepage": "https://github.com/noah-wardlow/react-deputy#readme",
+  "homepage": "https://github.com/prim-design/react-deputy#readme",
   "license": "MIT",
   "dependencies": {}
 }

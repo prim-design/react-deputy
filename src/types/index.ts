@@ -13,14 +13,15 @@ export interface RunApiProps {
 }
 
 export interface ToolOutputApiProps {
-  runId: string
-  threadId: string
+  run_id: string
+  thread_id: string
   tool_outputs: OpenAI.Beta.Threads.Runs.RunSubmitToolOutputsParams.ToolOutput[]
 }
 
 interface PlaceholderMessage {
   role: 'assistantPlaceholder'
   id: string
+  attachments?: OpenAI.Beta.Threads.Message.Attachment[]
 }
 interface UserMessage {
   id: string
@@ -53,7 +54,11 @@ type Assistant = AssistantWithThread | AssistantWithoutThread
 type AssistantConfigBase = {
   initialMessages?: Message[]
   assistant_id?: string
+  builtInTools?: Array<
+    Exclude<OpenAI.Beta.AssistantTool['type'], OpenAI.Beta.Assistants.FunctionTool['type']>
+  >
   runApi(data: RunApiProps): Promise<Response | void>
+  cancelApi?(data: { thread_id: string; run_id: string }): Promise<Response | void>
   onRunCreated?: (data: OpenAI.Beta.Threads.Runs.Run) => void | Promise<void>
   onMessageCreated?: (data: OpenAI.Beta.Threads.Message) => void | Promise<void>
   onMessageDelta?: (data: OpenAI.Beta.Threads.Messages.MessageDeltaEvent) => void | Promise<void>

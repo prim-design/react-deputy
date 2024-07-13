@@ -7,6 +7,8 @@ export async function processMessageStream(
   response: Response | void,
   config: AssistantConfig,
   setMessages: Dispatch<SetStateAction<Message[]>>,
+  setCurrentRunId: Dispatch<SetStateAction<string | undefined>>,
+  setRunningTools: Dispatch<SetStateAction<string[]>>,
 ) {
   if (!response || !response.body) {
     throw new Error('The response body is empty.')
@@ -49,7 +51,13 @@ export async function processMessageStream(
 
         const { event, data } = serverEvent
 
+        console.log('event', event, data)
+
         switch (event) {
+          case 'thread.created':
+            config.onThreadCreated?.(data)
+            break
+
           case 'thread.run.created':
             config.onRunCreated?.(data)
             break
@@ -94,6 +102,7 @@ export async function processMessageStream(
             break
 
           case 'thread.message.in_progress':
+            setCurrentRunId(data.id)
             config.onMessageInProgress?.(data)
             break
 
@@ -131,8 +140,17 @@ export async function processMessageStream(
               const actions = data.delta.step_details.tool_calls
 
               if (actions) {
+                actions
                 actions.forEach((action) => {
                   if (action.type === 'function' && action?.function?.name) {
+                    // Add function name to runningTools if it isn't there already
+                    setRunningTools((prevTools) => {
+                      if (action.function?.name && !prevTools.includes(action.function.name)) {
+                        return [...prevTools, action.function.name]
+                      } else {
+                        return prevTools
+                      }
+                    })
                     functionSnapshots[data.id] = {
                       functionName: action.function.name,
                       snapshot: action.function.arguments || '',
@@ -158,6 +176,7 @@ export async function processMessageStream(
 
           case 'thread.run.step.completed':
             config.onRunStepCompleted?.(data)
+            setRunningTools([])
             delete functionSnapshots[data.id]
 
             break
@@ -169,14 +188,20 @@ export async function processMessageStream(
               const tool_outputs = await config.tools?.processAssistantActions(actions)
 
               const response = await config.toolOutputsApi?.({
-                runId: data.id,
-                threadId: data.thread_id,
+                run_id: data.id,
+                thread_id: data.thread_id,
                 tool_outputs: tool_outputs ? refineToolOutputs(tool_outputs) : [],
               })
 
               // recursively process the new messages after tool outputs are submitted
 
-              await processMessageStream(response, config, setMessages)
+              await processMessageStream(
+                response,
+                config,
+                setMessages,
+                setCurrentRunId,
+                setRunningTools,
+              )
             }
             break
 
